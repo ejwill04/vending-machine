@@ -15,49 +15,161 @@ describe('Elevator', function() {
   });
 
   it('should take users creates and check for change', () => {
-    // Assert the current status of the vendingMachine is idle
     assert.equal(vendingMachine.state.status, 'idle')
-
-    // Alex inserts a dollar into the vending machine
     vendingMachine.insertCredit(alex, 100)
-
-    // Assert the current status of the vendingMachine is 'credited' after credits inserted
     assert.equal(vendingMachine.state.status, 'credited')
-    // Assert the total number of credits is 100 cents ($1.00) after credits inserted
     assert.equal(vendingMachine.state.credits, 100)
-    // Assert the total number of change is 0 cents ($0.00) before selection is made
     assert.equal(vendingMachine.state.change, 0)
   });
 
-  it('should be able to check if a selection exists', () => {
+  it('should be able to make a correct selection and receive item if sufficient credits', () => {
     assert.equal(vendingMachine.state.status, 'idle')
-    vendingMachine.insertCredit(alex, 100)
-    assert.equal(vendingMachine.state.status, 'credited')
-    assert.equal(vendingMachine.selectionExists('A1'), true)
-    vendingMachine.reset();
 
-    assert.equal(vendingMachine.state.status, 'idle')
     vendingMachine.insertCredit(alex, 100)
     assert.equal(vendingMachine.state.status, 'credited')
-    vendingMachine.selectionExists('Z1')
-    assert.equal(vendingMachine.state.message, 'That item does not exist')
-  })
+    assert.equal(vendingMachine.state.credits, 100)
+    assert.equal(vendingMachine.state.change, 0)
 
-  it('should check for sufficient credits', () => {
-    assert.equal(vendingMachine.state.status, 'idle')
-    vendingMachine.insertCredit(alex, 100)
-    assert.equal(vendingMachine.state.status, 'credited')
-    vendingMachine.sufficientCredits('A1')
+    vendingMachine.itemSelected('A1')
+    assert.equal(vendingMachine.state.userSelection, 'A1')
     assert.equal(vendingMachine.state.credits, 0)
     assert.equal(vendingMachine.state.change, 25)
     assert.deepEqual(vendingMachine.state.selection['A1'], [])
+    assert.equal(vendingMachine.state.message, '')
     vendingMachine.reset();
+  })
 
+  it('should be able to make a correct selection and receive error if insufficient credits', () => {
     assert.equal(vendingMachine.state.status, 'idle')
+
     vendingMachine.insertCredit(alex, 50)
     assert.equal(vendingMachine.state.status, 'credited')
-    vendingMachine.sufficientCredits('A1')
+    assert.equal(vendingMachine.state.credits, 50)
+    assert.equal(vendingMachine.state.change, 0)
+
+    vendingMachine.itemSelected('A1')
+    assert.equal(vendingMachine.state.userSelection, 'A1')
+    assert.equal(vendingMachine.state.credits, 50)
+    assert.equal(vendingMachine.state.change, 0)
+    assert.deepEqual(vendingMachine.state.selection['A1'], [{ name: 'Skittles', price: 75}])
     assert.equal(vendingMachine.state.message, 'insufficient credits')
+    vendingMachine.reset()
+  })
+
+  it('should recive error if incorrect selection', () => {
+    assert.equal(vendingMachine.state.status, 'idle')
+
+    vendingMachine.insertCredit(alex, 100)
+    assert.equal(vendingMachine.state.status, 'credited')
+    assert.equal(vendingMachine.state.credits, 100)
+    assert.equal(vendingMachine.state.change, 0)
+
+    vendingMachine.itemSelected('Z13')
+    assert.equal(vendingMachine.state.userSelection, 'Z13')
+    assert.equal(vendingMachine.state.credits, 100)
+    assert.equal(vendingMachine.state.change, 0)
+    assert.equal(vendingMachine.state.selection['Z13'], undefined)
+    assert.equal(vendingMachine.state.message, 'That item does not exist')
+    vendingMachine.reset()
+  })
+
+  it('should update update credits and status when insertCredit is called', () => {
+    assert.equal(vendingMachine.state.status, 'idle')
+    assert.equal(vendingMachine.state.credits, 0)
+
+    vendingMachine.insertCredit('alex', 300)
+
+    assert.equal(vendingMachine.state.status, 'credited')
+    assert.equal(vendingMachine.state.credits, 300)
+    vendingMachine.reset()
+  })
+
+  it('should check if item exists when selectionExists is called', () => {
+    vendingMachine.state.userSelection = 'B1'
+    assert.equal(vendingMachine.selectionExists(), true)
+    vendingMachine.reset()
+  })
+
+  it('should return true when sufficientCredits is called and there are sufficient credits', () => {
+    assert.equal(vendingMachine.state.status, 'idle')
+    assert.equal(vendingMachine.state.credits, 0)
+
+    vendingMachine.insertCredit('alex', 300)
+
+    assert.equal(vendingMachine.state.status, 'credited')
+    assert.equal(vendingMachine.state.credits, 300)
+    vendingMachine.state.userSelection = 'B1'
+    assert.equal(vendingMachine.sufficientCredits(), true)
+    vendingMachine.reset()
+  })
+
+  it('should return false when sufficientCredits is called and there are insufficient credits', () => {
+    assert.equal(vendingMachine.state.status, 'idle')
+    assert.equal(vendingMachine.state.credits, 0)
+
+    vendingMachine.insertCredit('alex', 10)
+
+    assert.equal(vendingMachine.state.status, 'credited')
+    assert.equal(vendingMachine.state.credits, 10)
+    vendingMachine.state.userSelection = 'B1'
+    assert.equal(vendingMachine.sufficientCredits(), false)
+    vendingMachine.reset()
+  })
+
+  it('getItemAndChange should update selection, change, and credits', () => {
+    assert.equal(vendingMachine.state.status, 'idle')
+    assert.equal(vendingMachine.state.credits, 0)
+
+    vendingMachine.insertCredit('alex', 100)
+
+    assert.equal(vendingMachine.state.status, 'credited')
+    assert.equal(vendingMachine.state.credits, 100)
+    vendingMachine.state.userSelection = 'B1'
+    vendingMachine.getItemAndChange()
+    assert.equal(vendingMachine.state.credits, 0)
+    assert.equal(vendingMachine.state.change, 25)
+    assert.deepEqual(vendingMachine.state.selection['B1'], [])
+    vendingMachine.reset()
+  })
+
+  it('A person inserts 200 credits ($2.00) and selects a specific treat that costs less than 100 credits. Same person selects another specific treat that costs less than 100 credits', () => {
+
+    const elijah = new Person("Elijah")
+    elijah.goToATM(200)
+    assert.equal(elijah.state.credits, 200)
+
+    assert.equal(vendingMachine.state.status, 'idle')
+    vendingMachine.insertCredit(elijah, elijah.state.credits)
+    elijah.userInsertsCredits(200)
+    assert.equal(vendingMachine.state.status, 'credited')
+    assert.equal(vendingMachine.state.credits, 200)
+
+    assert.equal(elijah.state.credits, 0)
+    assert.equal(vendingMachine.state.change, 0)
+
+    vendingMachine.itemSelected('A1')
+    assert.equal(vendingMachine.state.userSelection, 'A1')
+    assert.equal(vendingMachine.state.credits, 0)
+    assert.equal(vendingMachine.state.change, 125)
+    assert.deepEqual(vendingMachine.state.selection['A1'], [])
+    assert.equal(vendingMachine.state.message, '')
+
+    elijah.userReceivedCredits(vendingMachine.state.change)
+    assert.equal(elijah.state.credits, 125)
+
+    vendingMachine.insertCredit(elijah, elijah.state.credits)
+    elijah.userInsertsCredits(125)
+    assert.equal(elijah.state.credits, 0)
+
+    vendingMachine.itemSelected('B1')
+    assert.equal(vendingMachine.state.userSelection, 'B1')
+    assert.equal(vendingMachine.state.credits, 0)
+    assert.equal(vendingMachine.state.change, 50)
+    assert.deepEqual(vendingMachine.state.selection['B1'], [])
+    assert.equal(vendingMachine.state.message, '')
+
+    elijah.userReceivedCredits(vendingMachine.state.change)
+    assert.equal(elijah.state.credits, 50)
   })
 
 });
