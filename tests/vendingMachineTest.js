@@ -35,7 +35,7 @@ describe('Elevator', function() {
     assert.equal(vendingMachine.state.credits, 0)
     assert.equal(vendingMachine.state.change, 25)
     assert.deepEqual(vendingMachine.state.selection['A1'], [])
-    assert.equal(vendingMachine.state.message, '')
+    assert.equal(vendingMachine.state.message, 'Grab that which will kill you')
     vendingMachine.reset();
   })
 
@@ -152,7 +152,7 @@ describe('Elevator', function() {
     assert.equal(vendingMachine.state.credits, 0)
     assert.equal(vendingMachine.state.change, 125)
     assert.deepEqual(vendingMachine.state.selection['A1'], [])
-    assert.equal(vendingMachine.state.message, '')
+    assert.equal(vendingMachine.state.message, 'Grab that which will kill you')
 
     elijah.userReceivedCredits(vendingMachine.state.change)
     assert.equal(elijah.state.credits, 125)
@@ -166,7 +166,7 @@ describe('Elevator', function() {
     assert.equal(vendingMachine.state.credits, 0)
     assert.equal(vendingMachine.state.change, 50)
     assert.deepEqual(vendingMachine.state.selection['B1'], [])
-    assert.equal(vendingMachine.state.message, '')
+    assert.equal(vendingMachine.state.message, 'Grab that which will kill you')
 
     elijah.userReceivedCredits(vendingMachine.state.change)
     assert.equal(elijah.state.credits, 50)

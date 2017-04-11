@@ -1,4 +1,4 @@
-class VendingMachine {
+export default class VendingMachine {
   constructor() {
     this.state = {
       status: "idle",
@@ -54,42 +54,42 @@ class VendingMachine {
     this.constructor()
   }
 
-  displayItems() {
-    $('#items').empty()
-    Object.keys(vendingMachine.state.selection).map(key => {
-      if (!vendingMachine.state.selection[key][0]) {
-        $('#items').append(`
-          <div class='item'>
-            <div>No longer available</div>
-          </div>`)
-        } else {
-          $('#items').append(`
-            <div class='item'>
-              <div>${key}</div>
-              <div>${vendingMachine.state.selection[key][0].name}</div>
-              <div>$0.${vendingMachine.state.selection[key][0].price}</div>
-            </div>
-          `)
-        }
-    })
-  }
+  // displayItems() {
+  //   $('#items').empty()
+  //   Object.keys(vendingMachine.state.selection).map(key => {
+  //     if (!vendingMachine.state.selection[key][0]) {
+  //       $('#items').append(`
+  //         <div class='item'>
+  //           <div>No longer available</div>
+  //         </div>`)
+  //       } else {
+  //         $('#items').append(`
+  //           <div class='item'>
+  //             <div>${key}</div>
+  //             <div>${vendingMachine.state.selection[key][0].name}</div>
+  //             <div>$0.${vendingMachine.state.selection[key][0].price}</div>
+  //           </div>
+  //         `)
+  //       }
+  //   })
+  // }
 }
 
-const vendingMachine = new VendingMachine()
-vendingMachine.displayItems()
-
-$('#insert-coins-btn').on('click', () => {
-  let credit = $('#insert-hole').val()
-  vendingMachine.insertCredit('You', credit)
-  $('#credit-count').html(`$${vendingMachine.state.credits/100}`)
-  $('#insert-hole').val('')
-})
-
-$('#vend').on('click', () => {
-  let selection = $('#selection-input').val().toUpperCase()
-  vendingMachine.itemSelected(selection)
-  $('#message-display').html(vendingMachine.state.message)
-  vendingMachine.displayItems()
-  $('#selection-input').val('')
-  $('#credit-count').html(`Change: $${vendingMachine.state.change/100}`)
-})
+// const vendingMachine = new VendingMachine()
+// vendingMachine.displayItems()
+//
+// $('#insert-coins-btn').on('click', () => {
+//   let credit = $('#insert-hole').val()
+//   vendingMachine.insertCredit('You', credit)
+//   $('#credit-count').html(`$${vendingMachine.state.credits/100}`)
+//   $('#insert-hole').val('')
+// })
+//
+// $('#vend').on('click', () => {
+//   let selection = $('#selection-input').val().toUpperCase()
+//   vendingMachine.itemSelected(selection)
+//   $('#message-display').html(vendingMachine.state.message)
+//   vendingMachine.displayItems()
+//   $('#selection-input').val('')
+//   $('#credit-count').html(`Change: $${vendingMachine.state.change/100}`)
+// })
