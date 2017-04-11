@@ -1,0 +1,52 @@
+body {
+  background-color: lightgray;
+  display: flex;
+  justify-content: center;
+}
+
+header {
+  margin: 20px;
+  color: white;
+  font-size: 26px;
+}
+
+.vending-machine {
+  width: 600px;
+  height: 700px;
+  background-color: #1d1a31;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+#selection-wrapper, #credit-wrapper, #message-display {
+  margin: 15px;
+}
+
+#selection-wrapper {
+  display: inline-block;
+}
+
+#message-display {
+  color: white;
+  font-size: 20px;
+  height: 63px;
+}
+
+.item {
+  color: white;
+  margin: 10px;
+  height: 50px;
+}
+
+#items {
+  text-align: center;
+}
+
+#credit-count {
+  color: white;
+  height: 20px;
+  font-size: 16px;
+  margin: 5px;
+  text-align: center;
+}

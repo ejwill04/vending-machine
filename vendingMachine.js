@@ -1,6 +1,5 @@
-export default class VendingMachine {
+class VendingMachine {
   constructor() {
-    // status can be ["idle", "credited", "vending"]
     this.state = {
       status: "idle",
       credits: 0,
@@ -44,6 +43,7 @@ export default class VendingMachine {
   }
 
   getItemAndChange() {
+    this.state.message = 'Grab that which will kill you'
     let userSelection = this.state.userSelection
     let price = this.state.selection[userSelection].shift().price
     this.state.change = ( this.state.credits -= price)
@@ -53,4 +53,43 @@ export default class VendingMachine {
   reset() {
     this.constructor()
   }
+
+  displayItems() {
+    $('#items').empty()
+    Object.keys(vendingMachine.state.selection).map(key => {
+      if (!vendingMachine.state.selection[key][0]) {
+        $('#items').append(`
+          <div class='item'>
+            <div>No longer available</div>
+          </div>`)
+        } else {
+          $('#items').append(`
+            <div class='item'>
+              <div>${key}</div>
+              <div>${vendingMachine.state.selection[key][0].name}</div>
+              <div>$0.${vendingMachine.state.selection[key][0].price}</div>
+            </div>
+          `)
+        }
+    })
+  }
 }
+
+const vendingMachine = new VendingMachine()
+vendingMachine.displayItems()
+
+$('#insert-coins-btn').on('click', () => {
+  let credit = $('#insert-hole').val()
+  vendingMachine.insertCredit('You', credit)
+  $('#credit-count').html(`$${vendingMachine.state.credits/100}`)
+  $('#insert-hole').val('')
+})
+
+$('#vend').on('click', () => {
+  let selection = $('#selection-input').val().toUpperCase()
+  vendingMachine.itemSelected(selection)
+  $('#message-display').html(vendingMachine.state.message)
+  vendingMachine.displayItems()
+  $('#selection-input').val('')
+  $('#credit-count').html(`Change: $${vendingMachine.state.change/100}`)
+})
